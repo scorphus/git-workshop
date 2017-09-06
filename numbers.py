@@ -2,7 +2,9 @@ numbers = {0: 'zero'}
 
 
 def spell_number(n):
-    return numbers.get(n)
+    number = numbers.get(n)
+    if number:
+        return number.title().replace(' And ', ' and ')
 
 
 numbers[1] = 'one'
@@ -604,3 +606,4 @@ numbers[596] = 'five hundred and ninety six'
 numbers[597] = 'five hundred and ninety seven'
 numbers[598] = 'five hundred and ninety eight'
 numbers[599] = 'five hundred and ninety nine'
+numbers[600] = 'six hundred'
