@@ -7,3 +7,4 @@ def spell_number(n):
 
 numbers[1] = 'one'
 numbers[2] = 'two'
+numbers[3] = 'three'
