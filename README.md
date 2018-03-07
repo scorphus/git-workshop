@@ -1,6 +1,6 @@
 # Git Workshop
 
-Repository used for my Git workshops.
+Repository used for my Git workshops/talks
 
 ## Presentation
 
@@ -8,26 +8,74 @@ Mail me for the Keynote/PDF :wink:
 
 ## Bisecting
 
-1. Look manually for misspelled `eightty` commit
-2. Use the following to find the *titlize* commit
+Bisect helps you identify a commit that introduced a bug or a new functionality.
 
-```fish
-git bisect start --term-bad=new --term-good=old master works
-git bisect run ./magic.sh
+### Bisect manually and identify a commit that introduced a bug
+
+The bug we have is the misspelled `eightty`. Let's find it:
+
+```
+git bisect start buggy working
+./spell-number.py 88
+git bisect good/bad  # good or bad depending on output
+./spell-number.py 88
+git bisect good/bad  # good or bad depending on output
+# ... repeat until you get the commit that introduces the bug
 ```
 
-### `magic.sh`
+### Automate it with a script:
 
-```fish
+This can be automated with a simple Bash script:
+
+```
+git bisect start buggy working
+git bisect run ./script_spelling.sh
+```
+
+#### `script_spelling.sh`
+```bash
 #!/bin/sh
 
-word=$(./spell-number.py 88)
+# Delete Python bytecodes
+find . -name "*.pyc" -delete
 
-if [[ "$word" == "eighty eight" ]]; then
-    exit 0
-elif [[ "$word" == "eightty eight" ]]; then
-    exit 0
-else
+word=$(./spell-number.py 88 | tr /A-Z/ /a-z/)
+
+if [[ "$word" == "eightty eight" ]]; then
+    exit 1
+fi
+```
+
+### Bisect manually and identify a commit that introduced an unexpected feature
+
+The unexpected feature we have is capitalization. For cases like this – when you
+need to find a *good* commit – it's better to use old/new terms. Let's do it:
+
+```
+git bisect start --term-bad=new --term-good=old master working
+./spell-number.py 359
+git bisect old/new  # old or new depending on output
+./spell-number.py 359
+git bisect old/new  # old or new depending on output
+# ... repeat until you get the commit that introduces the feature
+```
+
+### Automate it with a script
+```
+git bisect start master working
+git bisect run ./script_capital.sh
+```
+
+#### `script_capital.sh`
+```bash
+#!/bin/sh
+
+# Delete Python bytecodes
+find . -name "*.pyc" -delete
+
+word=$(./spell-number.py 359)
+
+if [[ "$word" == "Three Hundred and Fifty Nine" ]]; then
     exit 1
 fi
 ```
